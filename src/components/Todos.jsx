@@ -1,11 +1,8 @@
 import Todo from "./Todo";
 import Loading from "./Loading";
-import { useContext } from "react";
 
-export default function Todos() {
-  const {
-    state: { todos, error, loading },
-  } = useContext(GlobalContext);
+export default function Todos({ steate, dispatch }) {
+  const { todos, error, loading } = steate;
 
   if (loading) {
     return (
