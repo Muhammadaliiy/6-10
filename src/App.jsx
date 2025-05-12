@@ -3,36 +3,49 @@ import Header from "./components/Header";
 import Todos from "./components/Todos";
 import { getTodos } from "./request";
 import { Toaster } from "sonner";
-console.error("Xatolik yuz berdi");
 
-function reducerFunction(state, action) {
+function reduserFunction(steate, action) {
   const { type, payload } = action;
 
   switch (type) {
     case "get":
-      return { ...state, todos: payload, loading: false };
+      return { ...steate, todos: payload, loading: false };
+
     case "loading":
-      return { ...state, loading: !state.loading };
+      return { ...steate, loading: !steate.loading };
+
     case "error":
-      return { ...state, error: !state.loading };
+      return { ...steate, loading: !steate.loading };
+
     case "delete":
-      return { ...state, todos: state.todos.filter((el) => el.id !== payload) };
+      return {
+        ...steate,
+        todos: steate.todos.filter((el) => el.id !== payload),
+      };
+
+    case "add":
+      return { ...steate, todos: [payload, ...steate.todos] };
+
+    case "filter":
+      return { ...steate, filter: payload };
+
     default:
-      return state;
+      return steate;
   }
 }
-
-const initialState = {
+const initialSteate = {
   todos: [],
   loading: false,
   error: null,
+  filter: "",
 };
 
 export default function App() {
-  const [state, dispatch] = useReducer(reducerFunction, initialState);
+  const [steate, dispatch] = useReducer(reduserFunction, initialSteate);
+
   useEffect(() => {
     dispatch({ type: "loading" });
-    getTodos()
+    getTodos(steate.filter ? `?priority=${steate.filter}` : "")
       .then((res) => {
         dispatch({ type: "get", payload: res });
       })
@@ -40,14 +53,14 @@ export default function App() {
         dispatch({ type: "error", payload: message });
       })
       .finally(() => {});
-  }, []);
+  }, [steate.filter]);
   return (
-    <>
-      <Header />
+    <div>
+      <Header dispatch={dispatch} />
       <main>
-        <Todos state={state} dispatch={dispatch} />
+        <Todos steate={steate} dispatch={dispatch} />
       </main>
-      <Toaster position="top-right" />
-    </>
+      <Toaster />
+    </div>
   );
 }

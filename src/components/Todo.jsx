@@ -6,86 +6,92 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+
 import { Button, buttonVariants } from "./ui/button";
-import { CheckCircle, RefreshCcwIcon, Trash, X } from "lucide-react";
-import { Badge } from "./ui/badge";
+import { CheckCircle, RefreshCcw, Trash, X } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { deleteTodos } from "../request";
+import { deleteTodo } from "../request";
 import { useState } from "react";
-console.log(navigator.platform); // ✅
-
 import { toast } from "sonner";
+
 export default function Todo({
-  priority = "secondary",
-  title = "Abdullohning qochishi",
+  priority = "outline",
+  title = "nmaa gap",
   completed = false,
   id = 1,
+  dispatch,
 }) {
-  const [delLoading, setDelLoading] = useState(false);
   const styles = {
-    medium: "outline",
-    high: "destructive",
+    hight: "outline",
+    medium: "destructive",
     low: "secondary",
   };
 
+  const [delLoading, setDelLoading] = useState(false);
+
   function handleDelete(id) {
     setDelLoading(true);
-    deleteTodos(id)
+    deleteTodo(id)
       .then((id) => {
         dispatch({ type: "delete", payload: id });
-        toast.success("Todo muvaffaqiyatli ochirildi ☺");
+        toast.success("Todo muvofaqqiyatli o'chirildi");
       })
-      .catch(() => {})
+      .catch(({message}) => {
+        toast.error(message)
+      })
       .finally(() => {
         setDelLoading(false);
       });
   }
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>Card Description</CardDescription>
-      </CardHeader>
-      <CardContent className="flex items-center gap-5">
-        <span>
-          Mihimlilik darajasai:{" "}
-          <Badge className={"uppercase"} variant={styles[priority]}>
-            {priority}
-          </Badge>
-        </span>
-        <span className="flex items-center gap-2">
-          Holati:
-          <Button size={"icon"} variant={completed ? "outline" : "secondary"}>
-            {completed ? <CheckCircle /> : <X />}
-          </Button>
-        </span>
-      </CardContent>
-      <CardFooter>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger
-              disabled={delLoading}
-              onClick={() => handleDelete(id)}
-              className={buttonVariants({ variant: "destructive" })}
-            >
-              {delLoading ? (
-                <RefreshCcwIcon className="animate-spin" />
-              ) : (
-                <Trash />
-              )}
-              <Trash></Trash>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>O'chirmoqchimisz?</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </CardFooter>
-    </Card>
+    <div>
+      <Card>
+        <CardHeader>
+          <CardTitle>{title}</CardTitle>
+        </CardHeader>
+        <CardContent className="flex items-center gap-5">
+          <span className="flex items-center gap-2">
+            Muximliylik darajasi
+            <Badge className="uppercase" variant={styles[priority]}>
+              {priority}
+            </Badge>
+          </span>
+          <span className="flex items-center gap-2">
+            Holati
+            <Button size={"icon"} variant={completed ? "outline" : "secondary"}>
+              {" "}
+              {completed ? <CheckCircle /> : <X />}
+            </Button>
+          </span>
+        </CardContent>
+        <CardFooter>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger
+                disabled={delLoading}
+                onClick={() => handleDelete(id)}
+                className={buttonVariants({ variant: "destructive" })}
+              >
+                {delLoading ? (
+                  <RefreshCcw className="animate-spin" />
+                ) : (
+                  <Trash />
+                )}
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>O'chirish</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </CardFooter>
+      </Card>
+    </div>
   );
 }

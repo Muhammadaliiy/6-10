@@ -1,42 +1,47 @@
-import Loading from "./Loading";
 import Todo from "./Todo";
+import Loading from "./Loading";
+import { useContext } from "react";
 
-export default function Todos({ state, dispatch }) {
-  const { todos, error, loading } = state;
+export default function Todos() {
+  const {
+    state: { todos, error, loading },
+  } = useContext(GlobalContext);
 
   if (loading) {
     return (
-      <div className=" container mx-auto px-5 flex justify-center py-10">
+      <div className="flex items-center justify-center py-10 px-5">
         <Loading />
       </div>
     );
   }
+
   if (error) {
     return (
-      <div className=" container mx-auto px-5 flex justify-center py-10">
+      <div className="flex items-center justify-center py-10 px-5">
         <p>{error}</p>
       </div>
     );
   }
-  if (todos?.length === 0) {
+
+  if (todos.length === 0) {
     return (
-      <div className=" container mx-auto px-5 flex justify-center py-10">
-        <p>No data</p>
+      <div className="flex items-center justify-center py-10 px-5">
+        <p>NO DATA</p>
       </div>
     );
   }
 
   return (
     <div className="flex flex-col gap-5 container mx-auto px-5 py-10">
-      {todos?.map(({ completed, title, id, priority }) => {
+      {todos.map(({ completed, id, priority, title }) => {
         return (
           <Todo
-            dispatch={dispatch}
             completed={completed}
-            key={id}
             title={title}
             priority={priority}
             id={id}
+            key={id}
+            dispatch={dispatch}
           />
         );
       })}
